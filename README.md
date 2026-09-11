@@ -45,3 +45,20 @@ To run and test this application locally using Apache Cordova:
    ```bash
    git clone [https://github.com/Aguiman-JoseKenneth/Aguiman_StudentProfile.git](https://github.com/Aguiman-JoseKenneth/Aguiman_StudentProfile.git)
    cd Aguiman_StudentProfile
+
+   ## 7. Application Screenshots
+
+### Profile Page
+![Profile Page](www/screenshot%20act%204/Profile.png)
+
+### About Page
+![About Page](www/screenshot%20act%204/About.png)
+
+### Skills Page
+![Skills Page](www/screenshot%20act%204/Skill.png)
+
+### Projects Page
+![Projects Page](www/screenshot%20act%204/Projects.png)
+
+### Contact Page
+![Contact Page](www/screenshot%20act%204/Contact.png)
