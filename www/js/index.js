@@ -28,7 +28,6 @@ function getStoredProfile() {
     return data ? JSON.parse(data) : defaultProfile;
 }
 
-// Safely updates elements across ALL 5 pages if they exist on the current DOM
 function renderProfile(data) {
     const nameEl = document.getElementById('display-name');
     const courseEl = document.getElementById('display-course');
@@ -48,19 +47,19 @@ function setupEventListeners() {
     const saveBtn = document.getElementById('save-btn');
     const cancelBtn = document.getElementById('cancel-btn');
 
-    if (editBtn) editBtn.addEventListener('click', openEditInterface);
-    if (saveBtn) saveBtn.addEventListener('click', saveProfile);
-    if (cancelBtn) cancelBtn.addEventListener('click', closeEditInterface);
+    if (editBtn) editBtn.onclick = openEditInterface;
+    if (saveBtn) saveBtn.onclick = saveProfile;
+    if (cancelBtn) cancelBtn.onclick = closeEditInterface;
 }
 
 function openEditInterface() {
     const currentData = getStoredProfile();
 
-    document.getElementById('input-name').value = currentData.fullName;
-    document.getElementById('input-course').value = currentData.course;
-    document.getElementById('input-year').value = currentData.yearLevel;
-    document.getElementById('input-about').value = currentData.about;
-    document.getElementById('input-skills').value = currentData.skills;
+    document.getElementById('input-name').value = currentData.fullName || '';
+    document.getElementById('input-course').value = currentData.course || '';
+    document.getElementById('input-year').value = currentData.yearLevel || '';
+    document.getElementById('input-about').value = currentData.about || '';
+    document.getElementById('input-skills').value = currentData.skills || '';
 
     const errorBanner = document.getElementById('error-message');
     if (errorBanner) {
@@ -85,7 +84,6 @@ function saveProfile() {
     const skills = document.getElementById('input-skills').value.trim();
     const errorBanner = document.getElementById('error-message');
 
-    // Section 6: Validation
     if (!name || !course || !year || !about || !skills) {
         if (errorBanner) {
             errorBanner.textContent = "Please complete all required fields.";

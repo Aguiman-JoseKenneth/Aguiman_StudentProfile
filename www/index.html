@@ -3,20 +3,24 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
-    <link rel="stylesheet" href="css/index.css">
     <title>Student Profile</title>
+    <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
-<!-- Navigation Bar -->
-<nav class="navbar">
-    <a href="index.html" class="nav-item active">Profile</a>
-    <a href="about.html" class="nav-item">About</a>
-    <a href="skills.html" class="nav-item">Skills</a>
-    <a href="projects.html" class="nav-item">Projects</a>
-    <a href="contact.html" class="nav-item">Contact</a>
-</nav>
+<header class="app-header">
+    <nav class="navbar">
+        <span class="logo">Student Profile</span>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">Profile</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="skills.html">Skills</a></li>
+            <li><a href="projects.html">Projects</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+</header>
 
-<div class="container">
+<main class="container">
     <!-- Display Profile View -->
     <section id="profile-display" class="profile-card">
         <img src="img/avatar.png" alt="Profile Picture" class="profile-avatar">
@@ -33,7 +37,7 @@
             <p id="display-skills">Loading...</p>
         </div>
 
-        <button id="edit-profile-btn" class="btn btn-primary">Edit Profile</button>
+        <button id="edit-profile-btn" class="btn btn-primary" type="button">Edit Profile</button>
     </section>
 
     <!-- Edit Profile Form (Hidden by Default) -->
@@ -42,7 +46,7 @@
 
         <div id="error-message" class="error-banner hidden"></div>
 
-        <form id="edit-profile-form">
+        <form id="edit-profile-form" onsubmit="return false;">
             <div class="form-group">
                 <label for="input-name">Full Name *</label>
                 <input type="text" id="input-name" placeholder="Enter full name">
@@ -50,7 +54,7 @@
 
             <div class="form-group">
                 <label for="input-course">Course *</label>
-                <input type="text" id="input-course" placeholder="e.g., BS Information Technology">
+                <input type="text" id="input-course" placeholder="e.g., BS Computer Science">
             </div>
 
             <div class="form-group">
@@ -60,21 +64,21 @@
 
             <div class="form-group">
                 <label for="input-about">About Me *</label>
-                <textarea id="input-about" rows="4" placeholder="Brief background description"></textarea>
+                <textarea id="input-about" rows="4" placeholder="Enter personal description"></textarea>
             </div>
 
             <div class="form-group">
-                <label for="input-skills">Skills (comma-separated) *</label>
-                <input type="text" id="input-skills" placeholder="e.g., HTML, CSS, JavaScript, Cordova">
+                <label for="input-skills">Skills *</label>
+                <textarea id="input-skills" rows="3" placeholder="Enter skills (comma-separated or listed)"></textarea>
             </div>
 
             <div class="button-group">
-                <button type="button" id="save-btn" class="btn btn-success">Save</button>
-                <button type="button" id="cancel-btn" class="btn btn-danger">Cancel</button>
+                <button id="save-btn" class="btn btn-success" type="button">Save</button>
+                <button id="cancel-btn" class="btn btn-secondary" type="button">Cancel</button>
             </div>
         </form>
     </section>
-</div>
+</main>
 
 <script src="cordova.js"></script>
 <script src="js/index.js"></script>
