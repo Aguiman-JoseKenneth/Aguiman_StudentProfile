@@ -1,79 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Profile - Jose Kenneth T. Aguiman</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
     <link rel="stylesheet" href="css/index.css">
+    <title>Student Profile</title>
 </head>
 <body>
+<!-- Navigation Bar -->
+<nav class="navbar">
+    <a href="index.html" class="nav-item active">Profile</a>
+    <a href="about.html" class="nav-item">About</a>
+    <a href="skills.html" class="nav-item">Skills</a>
+    <a href="projects.html" class="nav-item">Projects</a>
+    <a href="contact.html" class="nav-item">Contact</a>
+</nav>
 
-<!-- HEADER / PROFILE SECTION -->
-<header id="header" class="profile-card">
-    <div class="avatar-wrapper">
-        <div class="avatar">JK</div>
-    </div>
-    <h1 class="name">Jose Kenneth T. Aguiman</h1>
-    <p class="role">BSIT Student | Cybersecurity & Networking</p>
+<div class="container">
+    <!-- Display Profile View -->
+    <section id="profile-display" class="profile-card">
+        <img src="img/avatar.png" alt="Profile Picture" class="profile-avatar">
+        <h1 id="display-name">Loading...</h1>
+        <p class="meta"><span id="display-course">Loading...</span> - <span id="display-year">Loading...</span></p>
 
-    <!-- MULTI-PAGE NAVIGATION MENU -->
-    <nav class="nav-links">
-        <a href="index.html" class="nav-item active">Profile</a>
-        <a href="about.html" class="nav-item">About</a>
-        <a href="skills.html" class="nav-item">Skills</a>
-        <a href="projects.html" class="nav-item">Projects</a>
-        <a href="contact.html" class="nav-item">Contact</a>
-    </nav>
-</header>
-
-<main class="main-content">
-    <!-- HOMEPAGE SUMMARY SECTION -->
-    <section class="content-card">
-        <h2 class="card-title">Welcome</h2>
-        <div class="card-body">
-            <p>
-                Welcome to my student profile application. I am Jose Kenneth T. Aguiman, a 3rd-year BSIT student focused on computer systems, networking, and cybersecurity. Use the navigation menu above to explore my detailed background, skills, projects, and contact information.
-            </p>
+        <div class="profile-section">
+            <h2>About Me</h2>
+            <p id="display-about">Loading...</p>
         </div>
+
+        <div class="profile-section">
+            <h2>Skills</h2>
+            <p id="display-skills">Loading...</p>
+        </div>
+
+        <button id="edit-profile-btn" class="btn btn-primary">Edit Profile</button>
     </section>
 
-    <!-- PROFILE OVERVIEW SECTION -->
-    <section id="details" class="content-card">
-        <h2 class="card-title">Profile Overview</h2>
-        <ul class="details-list">
-            <li>
-                <strong>Interests:</strong>
-                Playing video games, reading manga, watching anime, and watching movies
-            </li>
-            <li>
-                <strong>Educational Background:</strong>
-                <ul class="sub-list">
-                    <li>
-                        <span class="school-name">Xavier University - College</span>
-                        <span class="school-meta">August 2023 – Present | 3rd-Year Bachelor of Science in Information Technology (BSIT)</span>
-                    </li>
-                    <li>
-                        <span class="school-name">Liceo De Cagayan Senior High School</span>
-                        <span class="school-meta">August 2021 – May 2023 | Graduated</span>
-                    </li>
-                    <li>
-                        <span class="school-name">Pilgrim Christian College</span>
-                        <span class="school-meta">June 2017 – May 2021 | Graduated</span>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <strong>Goals & Aspirations:</strong>
-                To become a skilled Cybersecurity Analyst or Network Administrator, specializing in optimizing network infrastructure, maintaining SOC operations, and securing enterprise digital systems.
-            </li>
-        </ul>
+    <!-- Edit Profile Form (Hidden by Default) -->
+    <section id="edit-profile-section" class="profile-card hidden">
+        <h2>Edit Profile Information</h2>
+
+        <div id="error-message" class="error-banner hidden"></div>
+
+        <form id="edit-profile-form">
+            <div class="form-group">
+                <label for="input-name">Full Name *</label>
+                <input type="text" id="input-name" placeholder="Enter full name">
+            </div>
+
+            <div class="form-group">
+                <label for="input-course">Course *</label>
+                <input type="text" id="input-course" placeholder="e.g., BS Information Technology">
+            </div>
+
+            <div class="form-group">
+                <label for="input-year">Year Level *</label>
+                <input type="text" id="input-year" placeholder="e.g., 3rd Year">
+            </div>
+
+            <div class="form-group">
+                <label for="input-about">About Me *</label>
+                <textarea id="input-about" rows="4" placeholder="Brief background description"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="input-skills">Skills (comma-separated) *</label>
+                <input type="text" id="input-skills" placeholder="e.g., HTML, CSS, JavaScript, Cordova">
+            </div>
+
+            <div class="button-group">
+                <button type="button" id="save-btn" class="btn btn-success">Save</button>
+                <button type="button" id="cancel-btn" class="btn btn-danger">Cancel</button>
+            </div>
+        </form>
     </section>
-</main>
+</div>
 
-<!-- FOOTER -->
-<footer>
-    <p>&copy; 2026 Jose Kenneth T. Aguiman | 3rd Year. All Rights Reserved.</p>
-</footer>
-
+<script src="cordova.js"></script>
+<script src="js/index.js"></script>
 </body>
 </html>
