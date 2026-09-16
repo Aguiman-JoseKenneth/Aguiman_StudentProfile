@@ -78,8 +78,8 @@ Follow these steps to build and run the Apache Cordova application locally:
 
 | Student Profile | Edit Profile |
 | :---: | :---: |
-| ![Student Profile](www/screenshot%20act%204/profile-act5.png) | ![Edit Profile](www/screenshot%20act%204/edit-act5.png) |
+| ![Student Profile](www/screenshot%20act%204/profile-act5.png.png) | ![Edit Profile](www/screenshot%20act%204/edit-act5.png.png) |
 
 | Updated Profile | Contact |
 | :---: | :---: |
-| ![Updated Profile](www/screenshot%20act%204/updated-act5.png) | ![Contact](www/screenshot%20act%204/contact-act5.png) |
+| ![Updated Profile](www/screenshot%20act%204/updated-act5.png.png) | ![Contact](www/screenshot%20act%204/contact-act5.png.png) |
