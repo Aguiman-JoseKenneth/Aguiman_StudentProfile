@@ -73,3 +73,13 @@ Follow these steps to build and run the Apache Cordova application locally:
    ```powershell
    git clone [https://github.com/Aguiman-JoseKenneth/Aguiman_StudentProfile.git](https://github.com/Aguiman-JoseKenneth/Aguiman_StudentProfile.git)
    cd Aguiman_StudentProfile
+
+## 8. Application Screenshots
+
+| Student Profile | Edit Profile |
+| :---: | :---: |
+| ![Student Profile](www/screenshot/act%204/profile) | ![Edit Profile](www/screenshot/act%204/profile) |
+
+| Updated Profile | Contact |
+| :---: | :---: |
+| ![Updated Profile](www/screenshot/act%204/profile) | ![Contact](www/screenshot/act%204/contact) |
