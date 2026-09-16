@@ -1,64 +1,85 @@
-# Aguiman Student Profile - Multi-Page Application (Activity 4)
+# Student Profile Application - Activity 5 (Profile Editing)
+
+---
 
 ## 1. Project Description
-The Aguiman Student Profile is a multi-page mobile and web application built using Apache Cordova. It showcases personal details, academic history, technical skills, projects, and contact information through a clean, responsive, and unified user interface.
+The **Student Profile Application** is a dynamic, multi-page mobile application built with **Apache Cordova**, **HTML5**, **CSS3**, and **JavaScript**. Designed for mobile and web viewports, it enables users to view academic profile information, explore portfolio sections, and dynamically edit profile details with real-time persistent local storage.
 
 ---
 
 ## 2. Application Pages
-The application is structured into five distinct HTML pages:
-* **Profile (`index.html`):** The primary landing page featuring an introduction, personal avatar, and main profile highlights.
-* **About (`about.html`):** Background details, academic goals, and educational overview.
-* **Skills (`skills.html`):** An itemized breakdown of technical proficiencies, tools, and capabilities.
-* **Projects (`projects.html`):** Highlights of completed and ongoing development projects.
-* **Contact (`contact.html`):** Contact channels, social links, and a communication form layout.
+
+- **Profile:** Serves as the main dashboard displaying core student details including profile photo, full name, course/program, year level, bio, and quick contact action buttons.
+- **About:** Displays background information, personal statement, academic goals, and educational history.
+- **Skills:** Categorizes and showcases technical skills, programming languages, software tools, and competency levels.
+- **Projects:** Lists highlight academic and personal software projects, along with descriptions, tech stacks, and repository links.
+- **Contact:** Provides a structured contact form and social media / direct messaging links to reach the student.
 
 ---
 
-## 3. Navigation
-Navigation across all five pages is implemented strictly using standard HTML relative anchor links (`<a href="...">`) embedded within a shared header navigation bar (`<nav>`). Users can seamlessly transition between `index.html`, `about.html`, `skills.html`, `projects.html`, and `contact.html`. No JavaScript, dynamic page loaders, or Single-Page Application (SPA) routing frameworks were used, strictly adhering to core multi-page web structure principles.
+## 3. Profile Editing
+
+The **Edit Profile** functionality provides a seamless inline transition from view mode to form input mode:
+- **How it works:** Clicking the "Edit Profile" button toggles the view to render editable input controls pre-populated with current profile data.
+- **Modifiable Information:**
+  - Full Name
+  - Course / Program
+  - Year Level
+  - Short Bio / About Summary
+  - Skills List & Contact Details
 
 ---
 
-## 4. Responsive Design
-The application retains full responsiveness across all screen dimensions by using a single shared stylesheet (`www/css/index.css`) built with flexible layouts (Flexbox and CSS Grid), fluid image dimensions, relative unit sizing, and CSS media queries.
-* **Desktop:** Displays wide multi-column card grids, full-width headers, and side-by-side content containers.
-* **Tablet:** Dynamically scales grid columns and adjusts element padding to optimize space on medium viewports.
-* **Mobile:** Reorganizes all elements into a clean, single-column stack with touch-friendly navigation targets, preventing horizontal scrolling, overlapping text, or distorted media.
+## 4. JavaScript Functionality
+
+JavaScript (ES6) drives all dynamic interactions and client-side logic across the application:
+- **Form Handling:** Captures submit/click events on the edit profile form and extracts current input values cleanly.
+- **Validation:** Performs checks to ensure required fields (such as Name and Program) are non-empty and formatted correctly prior to saving.
+- **Profile Updates:** Mutates DOM elements dynamically upon submission to display updated values across the app without requiring a full page refresh.
+- **Save:** Writes verified form data to `localStorage` and transitions the UI back to the static profile view.
+- **Cancel:** Reverts input fields to their original state and exits edit mode without modifying stored data.
 
 ---
 
-## 5. UI/UX Principles Applied
-The Module 4 UI/UX design principles are consistently maintained across every page:
-* **Consistency:** All five pages utilize identical color palettes, typography, spacing, navigation bars, and visual styles.
-* **Visual Hierarchy:** Distinct heading scales (`<h1>`, `<h2>`), card containers, and font weights clearly separate primary content from secondary details.
-* **Usability:** Users can easily identify their current location in the app via visual active state highlights (`class="nav-item active"`) on the navigation bar.
-* **Readability & Contrast:** Clean font styling and strong color contrast between background elements and foreground text ensure high legibility.
-* **Accessibility:** Built using semantic HTML tags, readable text scaling, and descriptive `alt` tags for image assets.
+## 5. Local Data Storage
+
+The application leverages the browser's `localStorage` API for client-side state persistence:
+- **Storing Data:** Form inputs are serialized into a JSON object and saved via `localStorage.setItem('studentProfile', JSON.stringify(profileData))`.
+- **Retrieving Data:** On page load / device ready (`deviceready`), `localStorage.getItem('studentProfile')` is fetched, parsed with `JSON.parse()`, and injected into the DOM.
+- **Fallback:** If no custom data exists in `localStorage`, default student profile values are loaded automatically.
 
 ---
 
-## 6. How to Run
-To run and test this application locally using Apache Cordova:
+## 6. Responsive Design
 
+The application uses flexible CSS layouts (Flexbox & CSS Grid) along with responsive viewport meta tags and media queries to deliver a seamless user experience across devices:
+- **Desktop:** Multi-column layouts with expanded sidebars and wide navigation bars.
+- **Tablet:** Two-column grid layouts with scalable card widths and touch-friendly targets.
+- **Mobile:** Single-column stacked layouts, collapsible menus, and full-width touch UI controls optimized for handheld devices.
+
+---
+
+## 7. How to Run
+
+Follow these steps to build and run the Apache Cordova application locally:
+
+### Prerequisites
+- Node.js & npm installed
+- Apache Cordova CLI (`npm install -g cordova`)
+- Android Studio & Android SDK (for mobile emulator/device execution)
+
+### Execution Steps
 1. **Clone the repository:**
-   ```bash
+   ```powershell
    git clone [https://github.com/Aguiman-JoseKenneth/Aguiman_StudentProfile.git](https://github.com/Aguiman-JoseKenneth/Aguiman_StudentProfile.git)
    cd Aguiman_StudentProfile
 
-   ## 7. Application Screenshots
+## 8. Application Screenshots
 
-### Profile Page
-![Profile Page](www/screenshot%20act%204/Profile.png)
+| Student Profile | Edit Profile |
+| :---: | :---: |
+| ![Student Profile](www/screenshot%20act%204/profile-act5.png) | ![Edit Profile](www/screenshot%20act%204/edit-act5.png) |
 
-### About Page
-![About Page](www/screenshot%20act%204/About.png)
-
-### Skills Page
-![Skills Page](www/screenshot%20act%204/Skill.png)
-
-### Projects Page
-![Projects Page](www/screenshot%20act%204/Projects.png)
-
-### Contact Page
-![Contact Page](www/screenshot%20act%204/Contact.png)
+| Updated Profile | Contact |
+| :---: | :---: |
+| ![Updated Profile](www/screenshot%20act%204/updated-act5.png) | ![Contact](www/screenshot%20act%204/contact-act5.png) |
