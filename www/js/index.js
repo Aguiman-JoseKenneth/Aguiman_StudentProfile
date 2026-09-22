@@ -1,5 +1,6 @@
-document.addEventListener('deviceready', onDeviceReady, false);
-
+/* ==========================================================================
+   Constants & Defaults (Declared first to prevent ReferenceError)
+   ========================================================================== */
 const defaultProfile = {
     fullName: "Jose Kenneth Aguiman",
     course: "BS Computer Science",
@@ -11,11 +12,18 @@ const defaultProfile = {
 const DEFAULT_AVATAR = 'img/avatar.png';
 const STORAGE_KEY_PHOTO = 'student_profile_picture';
 
+/* ==========================================================================
+   Lifecycle & Event Binding
+   ========================================================================== */
+document.addEventListener('deviceready', onDeviceReady, false);
+
 function onDeviceReady() {
+    console.log('Device ready fired');
     initProfile();
     setupEventListeners();
 }
 
+// Browser / Emulator DOM load fallback
 window.addEventListener('DOMContentLoaded', () => {
     initProfile();
     setupEventListeners();
@@ -28,8 +36,13 @@ function initProfile() {
 }
 
 function getStoredProfile() {
-    const data = localStorage.getItem('studentProfile');
-    return data ? JSON.parse(data) : defaultProfile;
+    try {
+        const data = localStorage.getItem('studentProfile');
+        return data ? JSON.parse(data) : defaultProfile;
+    } catch (e) {
+        console.error("Failed to parse stored profile:", e);
+        return defaultProfile;
+    }
 }
 
 function renderProfile(data) {
@@ -55,7 +68,7 @@ function setupEventListeners() {
     if (saveBtn) saveBtn.onclick = saveProfile;
     if (cancelBtn) cancelBtn.onclick = closeEditInterface;
 
-    // Activity 6: Camera Triggers (Tapping Image or Change Button)
+    // Camera Triggers
     const profileImg = document.getElementById('profile-picture');
     const changeBtn = document.getElementById('btn-change-photo');
 
@@ -67,9 +80,6 @@ function setupEventListeners() {
    Activity 6: Camera & Image Persistence Implementation
    ========================================================================== */
 
-/**
- * Loads profile picture from localStorage on app launch (Requirement 8)
- */
 function loadSavedProfilePicture() {
     const savedPhoto = localStorage.getItem(STORAGE_KEY_PHOTO);
     const profileImg = document.getElementById('profile-picture');
@@ -79,19 +89,14 @@ function loadSavedProfilePicture() {
     }
 }
 
-/**
- * Prompts user to choose between Camera or Device Gallery
- */
 function captureProfilePicture(event) {
     if (event) event.stopPropagation();
 
-    // Check if Cordova Camera API is available
     if (!navigator.camera) {
         showCameraError("Unable to access the camera API. Please run on a mobile device or emulator.");
         return;
     }
 
-    // Standard JavaScript confirm dialog selection
     const takePhoto = confirm("Select Photo Source:\n\n• Click OK to open Camera\n• Click Cancel to open Device Gallery");
 
     if (takePhoto) {
@@ -101,63 +106,54 @@ function captureProfilePicture(event) {
     }
 }
 
-/**
- * Invokes Cordova Camera plugin with the selected source type
- */
 function openImagePicker(sourceType) {
+    if (navigator.camera && navigator.camera.cleanup) {
+        navigator.camera.cleanup();
+    }
+
     const cameraOptions = {
-        quality: 50,                                       // Moderate compression for localStorage efficiency
-        destinationType: Camera.DestinationType.DATA_URL, // Returns base64 string
-        sourceType: sourceType,                            // CAMERA or PHOTOLIBRARY
-        allowEdit: true,                                   // Allows cropping photo
+        quality: 40,
+        destinationType: Camera.DestinationType.DATA_URL,
+        sourceType: sourceType,
+        allowEdit: false,
         encodingType: Camera.EncodingType.JPEG,
         mediaType: Camera.MediaType.PICTURE,
-        targetWidth: 400,
-        targetHeight: 400,
-        correctOrientation: true,                          // Fixes rotated photos
+        targetWidth: 300,
+        targetHeight: 300,
+        correctOrientation: true,
         saveToPhotoAlbum: false
     };
 
     navigator.camera.getPicture(onCameraSuccess, onCameraError, cameraOptions);
 }
 
-/**
- * Handles successful photo capture (Requirements 4, 5, 8)
- */
 function onCameraSuccess(imageData) {
-    const base64Image = "data:image/jpeg;base64," + imageData;
+    const base64Image = imageData.startsWith('data:image')
+        ? imageData
+        : 'data:image/jpeg;base64,' + imageData;
 
-    // Update image element preview
     const profileImg = document.getElementById('profile-picture');
     if (profileImg) {
         profileImg.src = base64Image;
     }
 
-    // Persist in localStorage
     try {
         localStorage.setItem(STORAGE_KEY_PHOTO, base64Image);
         hideCameraError();
     } catch (e) {
         console.error("LocalStorage error:", e);
-        showCameraError("Failed to save image. Storage quota exceeded.");
     }
 }
 
-/**
- * Handles camera errors and user cancellations (Requirements 6, 7)
- */
 function onCameraError(message) {
     if (!message) return;
-
     const lowerMsg = message.toLowerCase();
 
-    // Requirement 6: Handle user cancellation without crashing
     if (lowerMsg.includes("cancelled") || lowerMsg.includes("canceled") || lowerMsg.includes("no image selected")) {
-        console.log("Operation cancelled by user. Existing picture preserved.");
+        console.log("Operation cancelled by user.");
         return;
     }
 
-    // Requirement 7: Show user-friendly error banner if camera access fails
     console.error("Camera Error: " + message);
     showCameraError("Unable to access camera or gallery. Please check your device permissions.");
 }
