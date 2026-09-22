@@ -21,9 +21,17 @@
 </header>
 
 <main class="container">
+    <!-- Camera Error/Permission Banner -->
+    <div id="camera-error-message" class="error-banner hidden"></div>
+
     <!-- Display Profile View -->
     <section id="profile-display" class="profile-card">
-        <img src="img/avatar.png" alt="Profile Picture" class="profile-avatar">
+        <!-- Interactive Profile Avatar Container -->
+        <div class="profile-avatar-container">
+            <img id="profile-picture" src="img/avatar.png" alt="Profile Picture" class="profile-avatar">
+            <button id="btn-change-photo" class="avatar-overlay-btn" type="button">Change Profile Picture</button>
+        </div>
+
         <h1 id="display-name">Loading...</h1>
         <p class="meta"><span id="display-course">Loading...</span> - <span id="display-year">Loading...</span></p>
 

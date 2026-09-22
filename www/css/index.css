@@ -154,3 +154,38 @@ h1, h2 {
     margin-bottom: 15px;
     text-align: center;
 }
+
+.profile-avatar-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.profile-avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #007bff;
+    cursor: pointer;
+}
+
+.avatar-overlay-btn {
+    display: block;
+    margin: 8px auto 0 auto;
+    padding: 6px 12px;
+    font-size: 12px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.avatar-overlay-btn:hover {
+    background-color: #0056b3;
+}
+
+.hidden {
+    display: none !important;
+}

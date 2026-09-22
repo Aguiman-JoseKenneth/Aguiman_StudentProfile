@@ -8,6 +8,9 @@ const defaultProfile = {
     skills: "JavaScript, HTML5, CSS3, Apache Cordova, Python, MySQL"
 };
 
+const DEFAULT_AVATAR = 'img/avatar.png';
+const STORAGE_KEY_PHOTO = 'student_profile_picture';
+
 function onDeviceReady() {
     initProfile();
     setupEventListeners();
@@ -21,6 +24,7 @@ window.addEventListener('DOMContentLoaded', () => {
 function initProfile() {
     const savedData = getStoredProfile();
     renderProfile(savedData);
+    loadSavedProfilePicture();
 }
 
 function getStoredProfile() {
@@ -50,7 +54,138 @@ function setupEventListeners() {
     if (editBtn) editBtn.onclick = openEditInterface;
     if (saveBtn) saveBtn.onclick = saveProfile;
     if (cancelBtn) cancelBtn.onclick = closeEditInterface;
+
+    // Activity 6: Camera Triggers (Tapping Image or Change Button)
+    const profileImg = document.getElementById('profile-picture');
+    const changeBtn = document.getElementById('btn-change-photo');
+
+    if (profileImg) profileImg.onclick = captureProfilePicture;
+    if (changeBtn) changeBtn.onclick = captureProfilePicture;
 }
+
+/* ==========================================================================
+   Activity 6: Camera & Image Persistence Implementation
+   ========================================================================== */
+
+/**
+ * Loads profile picture from localStorage on app launch (Requirement 8)
+ */
+function loadSavedProfilePicture() {
+    const savedPhoto = localStorage.getItem(STORAGE_KEY_PHOTO);
+    const profileImg = document.getElementById('profile-picture');
+
+    if (profileImg) {
+        profileImg.src = savedPhoto ? savedPhoto : DEFAULT_AVATAR;
+    }
+}
+
+/**
+ * Prompts user to choose between Camera or Device Gallery
+ */
+function captureProfilePicture(event) {
+    if (event) event.stopPropagation();
+
+    // Check if Cordova Camera API is available
+    if (!navigator.camera) {
+        showCameraError("Unable to access the camera API. Please run on a mobile device or emulator.");
+        return;
+    }
+
+    // Standard JavaScript confirm dialog selection
+    const takePhoto = confirm("Select Photo Source:\n\n• Click OK to open Camera\n• Click Cancel to open Device Gallery");
+
+    if (takePhoto) {
+        openImagePicker(Camera.PictureSourceType.CAMERA);
+    } else {
+        openImagePicker(Camera.PictureSourceType.PHOTOLIBRARY);
+    }
+}
+
+/**
+ * Invokes Cordova Camera plugin with the selected source type
+ */
+function openImagePicker(sourceType) {
+    const cameraOptions = {
+        quality: 50,                                       // Moderate compression for localStorage efficiency
+        destinationType: Camera.DestinationType.DATA_URL, // Returns base64 string
+        sourceType: sourceType,                            // CAMERA or PHOTOLIBRARY
+        allowEdit: true,                                   // Allows cropping photo
+        encodingType: Camera.EncodingType.JPEG,
+        mediaType: Camera.MediaType.PICTURE,
+        targetWidth: 400,
+        targetHeight: 400,
+        correctOrientation: true,                          // Fixes rotated photos
+        saveToPhotoAlbum: false
+    };
+
+    navigator.camera.getPicture(onCameraSuccess, onCameraError, cameraOptions);
+}
+
+/**
+ * Handles successful photo capture (Requirements 4, 5, 8)
+ */
+function onCameraSuccess(imageData) {
+    const base64Image = "data:image/jpeg;base64," + imageData;
+
+    // Update image element preview
+    const profileImg = document.getElementById('profile-picture');
+    if (profileImg) {
+        profileImg.src = base64Image;
+    }
+
+    // Persist in localStorage
+    try {
+        localStorage.setItem(STORAGE_KEY_PHOTO, base64Image);
+        hideCameraError();
+    } catch (e) {
+        console.error("LocalStorage error:", e);
+        showCameraError("Failed to save image. Storage quota exceeded.");
+    }
+}
+
+/**
+ * Handles camera errors and user cancellations (Requirements 6, 7)
+ */
+function onCameraError(message) {
+    if (!message) return;
+
+    const lowerMsg = message.toLowerCase();
+
+    // Requirement 6: Handle user cancellation without crashing
+    if (lowerMsg.includes("cancelled") || lowerMsg.includes("canceled") || lowerMsg.includes("no image selected")) {
+        console.log("Operation cancelled by user. Existing picture preserved.");
+        return;
+    }
+
+    // Requirement 7: Show user-friendly error banner if camera access fails
+    console.error("Camera Error: " + message);
+    showCameraError("Unable to access camera or gallery. Please check your device permissions.");
+}
+
+function showCameraError(msg) {
+    const errorBox = document.getElementById('camera-error-message');
+    if (errorBox) {
+        errorBox.textContent = msg;
+        errorBox.classList.remove('hidden');
+        setTimeout(() => {
+            errorBox.classList.add('hidden');
+        }, 5000);
+    } else {
+        alert(msg);
+    }
+}
+
+function hideCameraError() {
+    const errorBox = document.getElementById('camera-error-message');
+    if (errorBox) {
+        errorBox.classList.add('hidden');
+        errorBox.textContent = '';
+    }
+}
+
+/* ==========================================================================
+   Activity 5: Profile Editing & Data Management
+   ========================================================================== */
 
 function openEditInterface() {
     const currentData = getStoredProfile();
