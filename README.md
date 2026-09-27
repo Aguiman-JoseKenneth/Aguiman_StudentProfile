@@ -95,9 +95,66 @@ The interface is designed mobile-first and maintains full responsive integrity a
 * **Tablets (481px - 768px):** Flexible multi-column card grids for profile data and project displays.
 * **Desktop Viewports (769px+):** Centered application shell with constrained maximum width (800px), elevation shadows, and clean framing.
 
-### Installation & Execution Steps
+## 11. How to Run & Deploy
+**Prerequisites**
+* **Node.js** (v18+ recommended)
+* **Apache Cordova** CLI (npm install -g cordova)
+* **XAMPP Control Panel** (Apache & MySQL)
+* **Android Studio** with Android Emulator
 
+  **Backend API Setup**
+  1. Launch **XAMPP Control Panel** and start both **Apache** and **MySQL.**
+  2. Open **MySQL Workbench** or **phpMyAdmin** and run the **database setup query:**
+ 
+    SQL
+CREATE DATABASE IF NOT EXISTS student_db;
+USE student_db;
+
+CREATE TABLE IF NOT EXISTS students (
+    student_id VARCHAR(50) PRIMARY KEY,
+    password VARCHAR(255) NOT NULL,
+    full_name VARCHAR(100),
+    course VARCHAR(100),
+    year_level VARCHAR(50),
+    about_me TEXT,
+    skills TEXT
+);
+
+3. Copy the backend API directory (student_api/) into your local XAMPP htdocs directory:
+C:\xampp\htdocs\student_api\
+
+**Cordova App Installation & Execution**
 1. **Clone the Repository:**
-   ```bash
-   git clone [https://github.com/Aguiman-JoseKenneth/Aguiman_StudentProfile.git](https://github.com/Aguiman-JoseKenneth/Aguiman_StudentProfile.git)
+   git clone https://github.com/Aguiman-JoseKenneth/Aguiman_StudentProfile.git
    cd Aguiman_StudentProfile
+
+2. **Restore Dependencies & Platforms:**
+   cordova prepare
+
+## 12. **Test Demonstration Account**
+Use these credentials during review to evaluate authenticated app features:
+**Field            Value**
+**Student id**     2023-0001 
+**password**       password123
+
+## 13. **Application Screenshots**
+
+**Feature View**                                          **Screenshot Path**
+
+**Login View**                                         C:\Users\kenle\StudentProfile\www\screenshot act 7\01-login-screen.png
+
+**Authenticated Profile**                              C:\Users\kenle\StudentProfile\www\screenshot act 7\02-profile-view.png
+
+**Edit Profile Modal**                                 C:\Users\kenle\StudentProfile\www\screenshot act 7\03-edit-profile.png
+
+**Updated Profile View**                               C:\Users\kenle\StudentProfile\www\screenshot act 7\04-updated-profile.png
+
+**Camera Avatar Update**                               C:\Users\kenle\StudentProfile\www\screenshot act 7\05-camera-update.png
+
+**Account Deletion Flow**                              C:\Users\kenle\StudentProfile\www\screenshot act 7\06-delete-account.png
+
+**Account Delete Success**                             C:\Users\kenle\StudentProfile\www\screenshot act 7\06-delete-confirm account.png
+
+**MySQL Workbench Records**                            C:\Users\kenle\StudentProfile\www\screenshot act 7\07-mysql-records.png
+
+
