@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
     <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval';
+          content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval' http://* https://*;
+               connect-src *;
                style-src 'self' 'unsafe-inline';
                media-src *;
                img-src 'self' data: blob: android-webview-video-poster:;">
@@ -12,86 +13,121 @@
     <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
-<header class="app-header">
-    <nav class="navbar">
-        <span class="logo">Student Profile</span>
-        <ul class="nav-links">
-            <li><a href="index.html" class="active">Profile</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="skills.html">Skills</a></li>
-            <li><a href="projects.html">Projects</a></li>
-            <li><a href="contact.html">Contact</a></li>
-        </ul>
-    </nav>
-</header>
 
-<main class="container">
-    <!-- Camera Error/Permission Banner -->
-    <div id="camera-error-message" class="error-banner hidden"></div>
+<!-- 1. LOGIN MODAL OVERLAY (Blocks screen on startup) -->
+<div id="login-overlay">
+    <div class="login-card">
+        <h2>Student Portal Login</h2>
 
-    <!-- Display Profile View -->
-    <section id="profile-display" class="profile-card">
-        <!-- Interactive Profile Avatar Container -->
-        <div class="profile-avatar-container">
-            <img id="profile-picture" src="img/avatar.png" alt="Profile Picture" class="profile-avatar">
-            <button id="btn-change-photo" class="avatar-overlay-btn" type="button">Change Profile Picture</button>
-        </div>
+        <div id="login-error-message" class="error-banner hidden"></div>
 
-        <h1 id="display-name">Loading...</h1>
-        <p class="meta"><span id="display-course">Loading...</span> - <span id="display-year">Loading...</span></p>
-
-        <div class="profile-section">
-            <h2>About Me</h2>
-            <p id="display-about">Loading...</p>
-        </div>
-
-        <div class="profile-section">
-            <h2>Skills</h2>
-            <p id="display-skills">Loading...</p>
-        </div>
-
-        <button id="edit-profile-btn" class="btn btn-primary" type="button">Edit Profile</button>
-    </section>
-
-    <!-- Edit Profile Form (Hidden by Default) -->
-    <section id="edit-profile-section" class="profile-card hidden">
-        <h2>Edit Profile Information</h2>
-
-        <div id="error-message" class="error-banner hidden"></div>
-
-        <form id="edit-profile-form" onsubmit="return false;">
+        <form id="login-form" onsubmit="return false;">
             <div class="form-group">
-                <label for="input-name">Full Name *</label>
-                <input type="text" id="input-name" placeholder="Enter full name">
+                <label for="input-student-id">Student ID / Username</label>
+                <input type="text" id="input-student-id" placeholder="Enter Student ID" required>
             </div>
 
             <div class="form-group">
-                <label for="input-course">Course *</label>
-                <input type="text" id="input-course" placeholder="e.g., BS Computer Science">
+                <label for="input-password">Password</label>
+                <input type="password" id="input-password" placeholder="Enter Password" required>
             </div>
 
-            <div class="form-group">
-                <label for="input-year">Year Level *</label>
-                <input type="text" id="input-year" placeholder="e.g., 3rd Year">
+            <button id="login-btn" class="btn btn-primary" type="button">Log In</button>
+        </form>
+    </div>
+</div>
+
+<!-- 2. MAIN APP CONTAINER (Hidden until login succeeds) -->
+<div id="app-view" class="hidden">
+
+    <!-- HEADER NAVIGATION -->
+    <header class="app-header">
+        <nav class="navbar">
+            <span class="logo">Student Profile</span>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Profile</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="skills.html">Skills</a></li>
+                <li><a href="projects.html">Projects</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <button id="logout-btn" class="btn btn-secondary" type="button" style="padding: 6px 12px; font-size: 0.82rem; width: auto; margin-top: 4px;">Logout</button>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="container">
+        <!-- Camera Error/Permission Banner -->
+        <div id="camera-error-message" class="error-banner hidden"></div>
+
+        <!-- Display Profile View -->
+        <section id="profile-display" class="profile-card">
+            <!-- Interactive Profile Avatar Container -->
+            <div class="profile-avatar-container">
+                <img id="profile-picture" src="img/avatar.png" alt="Profile Picture" class="profile-avatar">
+                <button id="btn-change-photo" class="avatar-overlay-btn" type="button">Change Profile Picture</button>
             </div>
 
-            <div class="form-group">
-                <label for="input-about">About Me *</label>
-                <textarea id="input-about" rows="4" placeholder="Enter personal description"></textarea>
+            <h1 id="display-name">Loading...</h1>
+            <p class="meta"><span id="display-course">Loading...</span> • <span id="display-year">Loading...</span></p>
+
+            <div class="profile-section">
+                <h2>About Me</h2>
+                <p id="display-about">Loading...</p>
             </div>
 
-            <div class="form-group">
-                <label for="input-skills">Skills *</label>
-                <textarea id="input-skills" rows="3" placeholder="Enter skills (comma-separated or listed)"></textarea>
+            <div class="profile-section">
+                <h2>Skills</h2>
+                <p id="display-skills">Loading...</p>
             </div>
 
             <div class="button-group">
-                <button id="save-btn" class="btn btn-success" type="button">Save</button>
-                <button id="cancel-btn" class="btn btn-secondary" type="button">Cancel</button>
+                <button id="edit-profile-btn" class="btn btn-primary" type="button">Edit Profile</button>
+                <button id="delete-account-btn" class="btn btn-secondary" type="button" style="background-color: #ef4444;">Delete Account</button>
             </div>
-        </form>
-    </section>
-</main>
+        </section>
+
+        <!-- Edit Profile Form (Hidden by Default) -->
+        <section id="edit-profile-section" class="profile-card hidden">
+            <h2>Edit Profile Information</h2>
+
+            <div id="error-message" class="error-banner hidden"></div>
+
+            <form id="edit-profile-form" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="input-name">Full Name *</label>
+                    <input type="text" id="input-name" placeholder="Enter full name">
+                </div>
+
+                <div class="form-group">
+                    <label for="input-course">Course *</label>
+                    <input type="text" id="input-course" placeholder="e.g., BS Information Technology">
+                </div>
+
+                <div class="form-group">
+                    <label for="input-year">Year Level *</label>
+                    <input type="text" id="input-year" placeholder="e.g., 3rd Year">
+                </div>
+
+                <div class="form-group">
+                    <label for="input-about">About Me *</label>
+                    <textarea id="input-about" rows="4" placeholder="Enter personal description"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="input-skills">Skills *</label>
+                    <textarea id="input-skills" rows="3" placeholder="Enter skills (comma-separated or listed)"></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button id="save-btn" class="btn btn-success" type="button">Save</button>
+                    <button id="cancel-btn" class="btn btn-secondary" type="button">Cancel</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+</div>
 
 <script src="cordova.js"></script>
 <script src="js/index.js"></script>
