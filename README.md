@@ -1,85 +1,91 @@
-# Student Profile Application - Activity 5 (Profile Editing)
-
----
+# Student Profile Mobile Application — Activity 6: Camera Integration
 
 ## 1. Project Description
-The **Student Profile Application** is a dynamic, multi-page mobile application built with **Apache Cordova**, **HTML5**, **CSS3**, and **JavaScript**. Designed for mobile and web viewports, it enables users to view academic profile information, explore portfolio sections, and dynamically edit profile details with real-time persistent local storage.
+The **Student Profile Application** is a cross-platform mobile app built using **Apache Cordova**, HTML5, CSS3, and modern JavaScript (ES6+). Designed as an interactive digital portfolio and profile manager, the application showcases student credentials, academic skills, featured software projects, and contact channels. With Activity 6, the application incorporates native mobile hardware access via the Cordova Camera Plugin, allowing users to capture or upload personal profile photos dynamically with client-side persistence.
 
 ---
 
 ## 2. Application Pages
+The application features a single-page architecture with smooth tabbed navigation across five distinct views:
 
-- **Profile:** Serves as the main dashboard displaying core student details including profile photo, full name, course/program, year level, bio, and quick contact action buttons.
-- **About:** Displays background information, personal statement, academic goals, and educational history.
-- **Skills:** Categorizes and showcases technical skills, programming languages, software tools, and competency levels.
-- **Projects:** Lists highlight academic and personal software projects, along with descriptions, tech stacks, and repository links.
-- **Contact:** Provides a structured contact form and social media / direct messaging links to reach the student.
-
----
-
-## 3. Profile Editing
-
-The **Edit Profile** functionality provides a seamless inline transition from view mode to form input mode:
-- **How it works:** Clicking the "Edit Profile" button toggles the view to render editable input controls pre-populated with current profile data.
-- **Modifiable Information:**
-  - Full Name
-  - Course / Program
-  - Year Level
-  - Short Bio / About Summary
-  - Skills List & Contact Details
+*   **Profile Page:** The primary dashboard presenting the user's interactive profile picture, full name, academic program/specialization, short bio, and quick-action buttons.
+*   **About Page:** Outlines the student's background, educational history, career objectives, and personal statement.
+*   **Skills Page:** Categorizes technical proficiencies (such as programming languages, web development frameworks, database systems, and mobile toolchains) with visual proficiency meters.
+*   **Projects Page:** Highlights featured software development projects (e.g., web apps, game development, mobile utilities) with tech stack tags and repository links.
+*   **Contact Page:** Displays direct communication channels including email, mobile phone number, GitHub portfolio, and social media handles.
 
 ---
 
-## 4. JavaScript Functionality
-
-JavaScript (ES6) drives all dynamic interactions and client-side logic across the application:
-- **Form Handling:** Captures submit/click events on the edit profile form and extracts current input values cleanly.
-- **Validation:** Performs checks to ensure required fields (such as Name and Program) are non-empty and formatted correctly prior to saving.
-- **Profile Updates:** Mutates DOM elements dynamically upon submission to display updated values across the app without requiring a full page refresh.
-- **Save:** Writes verified form data to `localStorage` and transitions the UI back to the static profile view.
-- **Cancel:** Reverts input fields to their original state and exits edit mode without modifying stored data.
+## 3. Profile Editing & Local Data Storage
+The application includes a real-time **Edit Profile** modal overlay:
+*   Users can update key profile information such as Full Name, Title/Program, and Short Bio.
+*   **Save Action:** Writes updated form fields directly to the browser/webview `localStorage` engine under structured key-value pairs (e.g., `student_name`, `student_title`, `student_bio`) and updates the DOM dynamically without page reloads.
+*   **Cancel Action:** Reverts uncommitted changes and closes the overlay without altering stored state.
+*   **Persistence:** Saved profile details automatically populate across application restarts.
 
 ---
 
-## 5. Local Data Storage
+## 4. Camera Integration
+Activity 6 extends the profile interface by enabling native camera and photo library access via the `cordova-plugin-camera` plugin.
 
-The application leverages the browser's `localStorage` API for client-side state persistence:
-- **Storing Data:** Form inputs are serialized into a JSON object and saved via `localStorage.setItem('studentProfile', JSON.stringify(profileData))`.
-- **Retrieving Data:** On page load / device ready (`deviceready`), `localStorage.getItem('studentProfile')` is fetched, parsed with `JSON.parse()`, and injected into the DOM.
-- **Fallback:** If no custom data exists in `localStorage`, default student profile values are loaded automatically.
+### Profile Picture Update Workflow:
+[ User Taps "Change Profile Picture" or Avatar ]
+↓
+[ Action Sheet / Source Selection (Camera vs. Gallery) ]
+↓
+[ Native Device Camera / Photo Picker Opens ]
+↓
+[ User Captures / Selects Photo ]
+↓
+[ Base64 DATA_URL Stream Generated ]
+↓
+[ Application DOM Updated & Image Saved to localStorage ]
 
 ---
 
-## 6. Responsive Design
-
-The application uses flexible CSS layouts (Flexbox & CSS Grid) along with responsive viewport meta tags and media queries to deliver a seamless user experience across devices:
-- **Desktop:** Multi-column layouts with expanded sidebars and wide navigation bars.
-- **Tablet:** Two-column grid layouts with scalable card widths and touch-friendly targets.
-- **Mobile:** Single-column stacked layouts, collapsible menus, and full-width touch UI controls optimized for handheld devices.
+## 5. Device Feature Integration
+Standard web applications running in standard browsers cannot directly interface with native smartphone hardware due to sandbox security constraints. Apache Cordova bridges this gap by embedding a native bridge layer:
+* It exposes standard JavaScript APIs (`navigator.camera.getPicture`) that translate web calls into native Android Java calls.
+* This grants direct access to hardware components like the primary/secondary device camera lens, hardware flash, and local photo media stores.
+* It provides a native mobile experience while maintaining a unified web technology codebase.
 
 ---
 
-## 7. How to Run
+## 6. Image Handling & Persistence
+To ensure seamless performance without requiring external cloud media servers:
+* **Image Rendering:** Captured photos are returned as Base64-encoded strings (`DATA_URL` format: `data:image/jpeg;base64,...`). The string is directly assigned to the `src` attribute of the `img#profile-picture` element for instant rendering.
+* **Data Persistence:** Upon successful acquisition, the Base64 image string is stored in client-side `localStorage` under the key `profilePicture`.
+* **Lifecycle Reload:** During the `deviceready` lifecycle event upon application launch, `index.js` checks for `localStorage.getItem('profilePicture')`. If present, it replaces the default avatar placeholder automatically.
 
-Follow these steps to build and run the Apache Cordova application locally:
+---
+
+## 7. Error Handling
+The application protects against runtime failures and provides intuitive user feedback:
+
+* **Camera Permission Denial:** If a user denies runtime camera or storage permissions, the `onCameraError` callback catches the exception, logging the failure and displaying an accessible warning banner (`#camera-error-message`) without breaking web view execution.
+* **Camera Cancellation:** If the user opens the camera interface but dismisses or cancels it without capturing a photo, the failure handler detects the cancellation signal, suppresses error alerts, leaves the existing profile photo untouched, and cleanly returns control to the Profile view.
+* **Camera Errors / Hardware Unavailability:** In cases of missing hardware or emulator limitations, execution falls back gracefully to default avatar state and alerts the user with an actionable message: *"Unable to access the camera. Please check your device permissions."*
+
+---
+
+## 8. Responsive Design
+The user interface is built mobile-first and maintains responsive fidelity across devices:
+* **Mobile Devices (320px - 480px):** Single-column layout with fixed bottom or sticky top navigation tab bars, touch-friendly tap targets (minimum 44px height), and optimized card padding.
+* **Tablets (481px - 768px):** Two-column card grid adaptations with flexible flexbox/grid containers for balanced spatial distribution.
+* **Desktop Viewports (769px+):** Centered application container with constrained max-width (`800px`), refined shadows, subtle border framing, and hover state interactions.
+
+---
+
+## 9. How to Run & Deploy
 
 ### Prerequisites
-- Node.js & npm installed
-- Apache Cordova CLI (`npm install -g cordova`)
-- Android Studio & Android SDK (for mobile emulator/device execution)
+* [Node.js](https://nodejs.org/) (v18+ recommended)
+* [Apache Cordova CLI](https://cordova.apache.org/) (`npm install -g cordova`)
+* [Android Studio](https://developer.android.com/studio) with Android SDK platform tools (for Android builds)
 
-### Execution Steps
-1. **Clone the repository:**
-   ```powershell
+### Installation & Execution Steps
+
+1. **Clone the Repository:**
+   ```bash
    git clone [https://github.com/Aguiman-JoseKenneth/Aguiman_StudentProfile.git](https://github.com/Aguiman-JoseKenneth/Aguiman_StudentProfile.git)
    cd Aguiman_StudentProfile
-
-## 8. Application Screenshots
-
-| Student Profile | Edit Profile |
-| :---: | :---: |
-| ![Student Profile](www/screenshot%20act%204/profile-act5.png.png) | ![Edit Profile](www/screenshot%20act%204/edit-act5.png.png) |
-
-| Updated Profile | Contact |
-| :---: | :---: |
-| ![Updated Profile](www/screenshot%20act%204/updated-act5.png.png) | ![Contact](www/screenshot%20act%204/contact-act5.png.png) |
