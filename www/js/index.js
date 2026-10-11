@@ -1,11 +1,13 @@
 /* ==========================================================================
    Constants & Defaults (Declared first to prevent ReferenceError)
    ========================================================================== */
+const API_BASE_URL = "http://10.0.2.2/student_api"; // Update this to match your XAMPP server host
+
 const defaultProfile = {
     fullName: "Jose Kenneth Aguiman",
-    course: "BS Computer Science",
+    course: "BS Information Technology",
     yearLevel: "3rd Year",
-    about: "Computer science student passionate about web and mobile app development.",
+    about: "Information Technology student passionate about web and mobile app development.",
     skills: "JavaScript, HTML5, CSS3, Apache Cordova, Python, MySQL"
 };
 
@@ -21,12 +23,14 @@ function onDeviceReady() {
     console.log('Device ready fired');
     initProfile();
     setupEventListeners();
+    checkSession();
 }
 
 // Browser / Emulator DOM load fallback
 window.addEventListener('DOMContentLoaded', () => {
     initProfile();
     setupEventListeners();
+    checkSession();
 });
 
 function initProfile() {
@@ -63,10 +67,31 @@ function setupEventListeners() {
     const editBtn = document.getElementById('edit-profile-btn');
     const saveBtn = document.getElementById('save-btn');
     const cancelBtn = document.getElementById('cancel-btn');
+    const loginBtn = document.getElementById('login-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    const deleteBtn = document.getElementById('delete-account-btn');
 
     if (editBtn) editBtn.onclick = openEditInterface;
     if (saveBtn) saveBtn.onclick = saveProfile;
     if (cancelBtn) cancelBtn.onclick = closeEditInterface;
+    if (loginBtn) loginBtn.onclick = handleLogin;
+    if (logoutBtn) logoutBtn.onclick = handleLogout;
+
+    // Delete Account Event Listener
+    if (deleteBtn) {
+        deleteBtn.onclick = function () {
+            const userId = localStorage.getItem("user_id");
+
+            if (!userId) {
+                alert("No active user session found.");
+                return;
+            }
+
+            if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+                deleteAccount(userId);
+            }
+        };
+    }
 
     // Camera Triggers
     const profileImg = document.getElementById('profile-picture');
@@ -74,6 +99,106 @@ function setupEventListeners() {
 
     if (profileImg) profileImg.onclick = captureProfilePicture;
     if (changeBtn) changeBtn.onclick = captureProfilePicture;
+}
+
+/* ==========================================================================
+   Authentication & Session Control
+   ========================================================================== */
+
+function checkSession() {
+    const userId = localStorage.getItem("user_id");
+
+    const loginOverlay = document.getElementById("login-overlay");
+    const appView = document.getElementById("app-view");
+
+    if (userId) {
+        // Logged in: Hide overlay, reveal top navbar & profile interface
+        if (loginOverlay) loginOverlay.classList.add("hidden");
+        if (appView) appView.classList.remove("hidden");
+    } else {
+        // Logged out: Hide full interface, reveal login screen
+        if (loginOverlay) loginOverlay.classList.remove("hidden");
+        if (appView) appView.classList.add("hidden");
+    }
+}
+
+function handleLogin() {
+    const studentIdInput = document.getElementById("input-student-id");
+    const passwordInput = document.getElementById("input-password");
+
+    const studentId = studentIdInput ? studentIdInput.value.trim() : "";
+    const password = passwordInput ? passwordInput.value.trim() : "";
+
+    if (!studentId || !password) {
+        showLoginError("Please enter both Username/Student ID and Password.");
+        return;
+    }
+
+    const targetUrl = `${API_BASE_URL}/login.php`;
+
+    // Create XMLHttpRequest to avoid WebView fetch restrictions
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", targetUrl, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.status === "success") {
+                        const userId = response.data ? response.data.student_id : studentId;
+                        localStorage.setItem("user_id", userId);
+
+                        // If user profile data is returned from MySQL, populate application view
+                        if (response.data) {
+                            const userProfile = {
+                                fullName: response.data.full_name || defaultProfile.fullName,
+                                course: response.data.course || defaultProfile.course,
+                                yearLevel: response.data.year_level || defaultProfile.yearLevel,
+                                about: response.data.about_me || defaultProfile.about,
+                                skills: response.data.skills || defaultProfile.skills
+                            };
+                            localStorage.setItem('studentProfile', JSON.stringify(userProfile));
+                            renderProfile(userProfile);
+                        }
+
+                        checkSession();
+                    } else {
+                        showLoginError(response.message || "Invalid Student ID or Password.");
+                    }
+                } catch (e) {
+                    showLoginError("Invalid JSON response from server.");
+                }
+            } else {
+                showLoginError(`Server Error (${xhr.status}): Unable to reach ${targetUrl}`);
+            }
+        }
+    };
+
+    xhr.onerror = function () {
+        showLoginError(`Network Error: Connection refused at ${targetUrl}`);
+    };
+
+    xhr.send(JSON.stringify({
+        student_id: studentId,
+        password: password
+    }));
+}
+
+function handleLogout() {
+    localStorage.removeItem("user_id");
+    checkSession();
+}
+
+function showLoginError(msg) {
+    const errorMsg = document.getElementById("login-error-message");
+    if (errorMsg) {
+        errorMsg.textContent = msg;
+        errorMsg.classList.remove("hidden");
+    } else {
+        alert(msg);
+    }
 }
 
 /* ==========================================================================
@@ -180,7 +305,7 @@ function hideCameraError() {
 }
 
 /* ==========================================================================
-   Activity 5: Profile Editing & Data Management
+   Activity 5 & 7: Profile Editing & Database Syncing
    ========================================================================== */
 
 function openEditInterface() {
@@ -223,6 +348,13 @@ function saveProfile() {
         return;
     }
 
+    // Fallback to active user ID or default student record ID
+    let userId = localStorage.getItem("user_id");
+    if (!userId) {
+        userId = "2023-0001";
+        localStorage.setItem("user_id", userId);
+    }
+
     const updatedProfile = {
         fullName: name,
         course: course,
@@ -231,7 +363,97 @@ function saveProfile() {
         skills: skills
     };
 
+    // Update Local Storage first so UI reflects instantly
     localStorage.setItem('studentProfile', JSON.stringify(updatedProfile));
     renderProfile(updatedProfile);
-    closeEditInterface();
+
+    // Send update request to backend database
+    const targetUrl = `${API_BASE_URL}/update_profile.php`;
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", targetUrl, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                try {
+                    const response = JSON.parse(xhr.responseText.trim());
+                    if (response.status === "success") {
+                        closeEditInterface();
+                    } else {
+                        alert("Database Notice: " + (response.message || "Failed to sync with MySQL, but saved locally."));
+                        closeEditInterface();
+                    }
+                } catch (e) {
+                    console.error("JSON parse error:", xhr.responseText);
+                    closeEditInterface();
+                }
+            } else {
+                console.warn("Server unreachable. Data saved locally.");
+                closeEditInterface();
+            }
+        }
+    };
+
+    xhr.onerror = function () {
+        console.warn("Network error during save. Data saved locally.");
+        closeEditInterface();
+    };
+
+    xhr.send(JSON.stringify({
+        student_id: userId,
+        full_name: name,
+        course: course,
+        year_level: year,
+        about_me: about,
+        skills: skills
+    }));
+}
+
+/* ==========================================================================
+   Activity 7: Account Deletion (CRUD Delete Operation)
+   ========================================================================== */
+
+function deleteAccount(studentId) {
+    const targetUrl = `${API_BASE_URL}/delete_profile.php`;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", targetUrl, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            try {
+                const response = JSON.parse(xhr.responseText.trim());
+                if (response.status === "success") {
+                    alert("Account deleted successfully.");
+                    localStorage.removeItem("user_id");
+                    localStorage.removeItem("studentProfile");
+                    localStorage.removeItem(STORAGE_KEY_PHOTO);
+                    checkSession();
+                } else {
+                    alert("Delete failed: " + (response.message || "Could not delete record."));
+                }
+            } catch (e) {
+                // Fallback: If server failed, clear session locally so app proceeds
+                alert("Account record removed from local session.");
+                localStorage.removeItem("user_id");
+                localStorage.removeItem("studentProfile");
+                localStorage.removeItem(STORAGE_KEY_PHOTO);
+                checkSession();
+            }
+        }
+    };
+
+    xhr.onerror = function () {
+        alert("Network Error: Could not reach server, cleared local session.");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("studentProfile");
+        localStorage.removeItem(STORAGE_KEY_PHOTO);
+        checkSession();
+    };
+
+    xhr.send(JSON.stringify({
+        student_id: studentId
+    }));
 }

@@ -3,6 +3,7 @@
     xmlns="http://www.w3.org/ns/widgets"
     xmlns:cdv="http://cordova.apache.org/ns/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
     <name>Aguiman_StudentProfile</name>
     <description>
         A sample Apache Cordova application that responds to the deviceready event.
@@ -10,16 +11,24 @@
     <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
         Apache Cordova Team
     </author>
+
     <content src="index.html" />
+
+    <!-- Network Whitelist & Intent Rules -->
+    <access origin="*" />
+    <allow-navigation href="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
 
     <platform name="android">
-        <config-file target="AndroidManifest.xml" parent="/manifest">
-            <uses-permission android:name="android.permission.CAMERA" />
-            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-            <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-        </config-file>
+        <!-- Allows HTTP cleartext traffic for local development -->
+        <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+            <application android:usesCleartextTraffic="true" />
+        </edit-config>
+
+        <!-- Forces scheme to http so WebView won't block http://10.0.2.2 as mixed content -->
+        <preference name="scheme" value="http" />
+        <preference name="hostname" value="localhost" />
+        <preference name="AndroidInsecureFileModeEnabled" value="true" />
     </platform>
 </widget>
